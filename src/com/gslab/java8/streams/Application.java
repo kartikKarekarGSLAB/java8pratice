@@ -17,7 +17,8 @@ public class Application {
 	public Application() {
 		this.employees = new ArrayList<>();
 		this.employees
-				.addAll(Arrays.asList(new Employee(102, "Nahush", "Senior Software engineer", "Crypto Money", "CIS", 3),
+				.addAll(Arrays.asList(
+						new Employee(102, "Nahush", "Senior Software engineer", "Crypto Money", "CIS", 3),
 						new Employee(101, "Kartik", "Senior Software engineer", "Extended Care", "CIS", 5),
 						new Employee(103, "Swapnil", "Lead Software engineer", "Extended Care", "CIS", 2),
 						new Employee(104, "Sanket", "Software engineer", "Crypto Money", "CIS", 10),
@@ -30,17 +31,21 @@ public class Application {
 	public static void main(String args[]) {
 		Application app = new Application();
 
+		//Get the stream first from the collection.
 		Stream<Employee> employeeStream = app.employees.stream();
-		System.out.println("Company's strenght ::" + employeeStream.count());
-
+		
+		System.out.println("Company's strength ::" + employeeStream.count());
 		// Since the count operation has already closed the stream we need to reopen the
 		// stream.
 		employeeStream = app.employees.stream();
-
-		// allMatch - Terminating operation. -- return boolean
+		
+		/* allMatch
+		 * Evaluate the function for every item in the stream. 
+		 * Terminating operation. -- return boolean
+		 */
 		boolean isGreaterThanAYear = employeeStream.allMatch((employee) -> employee.getYearsOfExperience() > 1);
 		System.out.println(isGreaterThanAYear ? "All employess having year of experoence greather than one."
-				: "You may hvae some tranee employees.");
+				: "You may have some Trainee engineer.");
 
 		// Since the allMatch operation has already closed the stream we need to reopen
 		// the stream.
@@ -57,6 +62,12 @@ public class Application {
 		System.out.println("Does any one has experience greater than 4 ? " + (isGreaterThanFourYear ? "Yes" : "No"));
 
 		// collect use to convert the stream into required collection type.
+		/*
+		 * The collect method. Which convert the elements in the stream into the required collection.
+		 * java.util.stream.Collectors : used for reduction of stream. it has many static methods to convert the stream into the required collection.
+		 * toList() - convert the collection into list.
+		 * toSet() - convert the collection into set.
+		 */
 		employeeStream = app.employees.stream();
 		List<Employee> empList = employeeStream.collect(Collectors.toList());
 		for (Employee index : empList) {
@@ -71,7 +82,7 @@ public class Application {
 			System.out.println(MessageFormat.format("{0} \n {1}", key, nameDesignationMap.get(key)));
 		}
 
-		// The collect will use a collector as a parameter.
+		// The collect will use a collector as a parameter. Defining the collectors as per user's choice.
 		// collectors groupingBy will take 2 Arguments :
 		/*
 		 * 1.classifier - a classifier function mapping input elements to
@@ -96,12 +107,21 @@ public class Application {
 			System.out.println("\nRandom Employee details ::" + emp.get());
 		}
 
+		/*
+		 * sort default sort the elements from the stream in natural order.
+		 * Otherwise need to mentioned the sorting criteria using the Comparator.
+		 * Comparator has static method comparing which can be used to specify the sorting condition. 
+		 */
 		// Sorting the values.
 		employeeStream = app.employees.stream();
 		employeeStream.sorted(Comparator.comparing(Employee::getDesignation)).forEach((e) -> {
 			System.out.println("\nEmployee names :" + e.getName() + " designation=" + e.getDesignation());
 		});
-
+		
+		/* consecutive operations on streams
+		 * 
+		 */
+		
 		employeeStream = app.employees.stream();
 		employeeStream.skip(1).map((e) -> {
 			e.setProject(e.getProject().equalsIgnoreCase("Crypto Money") ? "One Taxi" : e.getProject());
@@ -113,7 +133,13 @@ public class Application {
 				"PostgresSQL", "JAVA8", "RabbitMQ", "Caching using Hazelcast", "RabbitMQ", "PostgresSQL");
 		languages.distinct().forEach(System.out::println); // remove duplicate elements.
 
+		
+		/*
+		 * reduction operations on stream. max , min
+		 * will reduce the stream to a single value element return from the stream after checking the comparator condition on the stream.
+		 */
 		employeeStream = app.employees.stream();
+		
 		Optional<Employee> empWithMaxExperience = employeeStream.max(Comparator.comparing(Employee::getYearsOfExperience)); //
 		  if(empWithMaxExperience.isPresent()) { // 
 			  System.out.println("\nMAX :: " +empWithMaxExperience.get());
